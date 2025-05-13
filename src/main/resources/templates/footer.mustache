@@ -1,0 +1,199 @@
+</body>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- DataTables JS -->
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+
+<!-- Font Awesome for icons -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            dom: '<"top"lf>rt<"bottom"ip>',
+            pageLength: 10,
+            order: [[3, "desc"]],
+            responsive: true,
+            language: {
+                search: "_INPUT_",
+                searchPlaceholder: "Search posts...",
+                lengthMenu: "Show _MENU_ entries",
+                info: "Showing _START_ to _END_ of _TOTAL_ entries",
+                paginate: {
+                    first: '<i class="fas fa-angle-double-left"></i>',
+                    previous: '<i class="fas fa-angle-left"></i>',
+                    next: '<i class="fas fa-angle-right"></i>',
+                    last: '<i class="fas fa-angle-double-right"></i>'
+                }
+            },
+            initComplete: function() {
+                $('.dataTables_filter input').addClass('form-control');
+                $('.dataTables_length select').addClass('form-control');
+            }
+        });
+
+        // Add button styling
+        $('.btn-view, .btn-edit').css({
+            'background': 'transparent',
+            'border': 'none',
+            'color': '#4361ee',
+            'cursor': 'pointer',
+            'margin': '0 5px',
+            'font-size': '1rem',
+            'transition': 'color 0.2s'
+        }).hover(
+                function() { $(this).css('color', '#3a0ca3'); },
+                function() { $(this).css('color', '#4361ee'); }
+        );
+    });
+
+    // Modal functionality
+    const newPostBtn = document.getElementById('newPostBtn');
+    const modal = document.getElementById('newPostModal');
+    const closeBtn = document.querySelector('.modal-close');
+    const cancelBtn = document.querySelector('.btn-cancel');
+    const submitBtn = document.getElementById('submitPost');
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const filePreview = document.getElementById('filePreview');
+
+    let selectedFile = null;
+
+    // Open modal
+    newPostBtn.addEventListener('click', () => {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    });
+
+    // Close modal
+    function closeModal() {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        document.getElementById('postForm').reset();
+        filePreview.innerHTML = '';
+        selectedFile = null;
+    }
+
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
+
+    // Close when clicking outside modal
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // File drag and drop functionality
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropzone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropzone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight() {
+        dropzone.classList.add('dragover');
+    }
+
+    function unhighlight() {
+        dropzone.classList.remove('dragover');
+    }
+
+    dropzone.addEventListener('drop', handleDrop, false);
+    dropzone.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', handleFiles);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles({ target: { files } });
+    }
+
+    function handleFiles(e) {
+        const files = e.target.files;
+        if (files.length) {
+            selectedFile = files[0];
+            showFilePreview(selectedFile);
+        }
+    }
+
+    function showFilePreview(file) {
+        filePreview.innerHTML = '';
+
+        const previewItem = document.createElement('div');
+        previewItem.className = 'file-preview-item';
+
+        const icon = document.createElement('i');
+        icon.className = 'fas fa-file';
+
+        const fileName = document.createElement('span');
+        fileName.textContent = file.name;
+
+        const removeBtn = document.createElement('i');
+        removeBtn.className = 'fas fa-times file-preview-remove';
+        removeBtn.addEventListener('click', () => {
+            filePreview.innerHTML = '';
+            selectedFile = null;
+            fileInput.value = '';
+        });
+
+        previewItem.appendChild(icon);
+        previewItem.appendChild(fileName);
+        previewItem.appendChild(removeBtn);
+        filePreview.appendChild(previewItem);
+    }
+
+    // Form submission
+    submitBtn.addEventListener('click', async () => {
+        const title = document.getElementById('postTitle').value;
+        const author = document.getElementById('postAuthor').value;
+        const content = document.getElementById('postContent').value;
+
+        if (!title || !author || !content) {
+            alert('Please fill in all required fields');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('author', author);
+        formData.append('content', content);
+        if (selectedFile) {
+            formData.append('file', selectedFile);
+        }
+
+        try {
+            const response = await fetch('/api/posts', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('Post created successfully!');
+                closeModal();
+                // Refresh the DataTable
+                $('#dataTable').DataTable().ajax.reload();
+            } else {
+                throw new Error('Failed to create post');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error creating post');
+        }
+    });
+</script>
+</html>

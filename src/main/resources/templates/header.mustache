@@ -1,0 +1,385 @@
+<html>
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --success-color: #4cc9f0;
+            --border-radius: 0.375rem;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        .table-page-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2rem 0;
+        }
+
+        .table-content-wrapper {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .dataTables-container {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 1.5rem;
+            margin: 0 auto; /* Center horizontally */
+            max-width: 1200px;
+        }
+
+        .dataTables-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .dataTables-title i {
+            font-size: 1.5rem;
+        }
+
+        #dataTable {
+            width: 100% !important;
+            max-width: 100%;
+        }
+
+        #dataTable thead th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 500;
+            padding: 0.75rem 1rem;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+            border: none;
+        }
+
+        #dataTable thead th:first-child {
+            border-top-left-radius: var(--border-radius);
+        }
+
+        #dataTable thead th:last-child {
+            border-top-right-radius: var(--border-radius);
+        }
+
+        #dataTable tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        #dataTable tbody tr:hover {
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        #dataTable tbody td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+
+        #dataTable tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Pagination styling */
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: var(--border-radius) !important;
+            border: 1px solid #dee2e6 !important;
+            margin: 0 0.25rem;
+            transition: all 0.2s ease;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+            background: var(--primary-color) !important;
+            color: white !important;
+            border-color: var(--primary-color) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: #e9ecef !important;
+            color: var(--dark-color) !important;
+        }
+
+        /* Search and filter controls */
+        .dataTables_filter input {
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            padding: 0.375rem 0.75rem;
+            margin-left: 0.5rem;
+        }
+
+        .dataTables_length select {
+            border: 1px solid #dee2e6;
+            border-radius: var(--border-radius);
+            padding: 0.375rem 0.75rem;
+        }
+
+        /* Container for search and length controls */
+        .dataTables_wrapper .dataTables_filter,
+        .dataTables_wrapper .dataTables_length {
+            margin-bottom: 1rem;
+        }
+
+        /* Specific style for the search box container */
+        .dataTables_wrapper .dataTables_filter {
+            float: right;
+            margin-top: 0.5rem;
+            margin-right: 0.5rem;
+        }
+
+        /* Style for the search input itself */
+        .dataTables_wrapper .dataTables_filter input {
+            margin-left: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.375rem;
+            transition: border-color 0.15s ease-in-out;
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: #4361ee;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+        }
+
+        /* Additional spacing for the table */
+        .dataTables_wrapper .dataTables_scrollBody {
+            margin-top: 1rem;
+        }
+
+        /* If you're using the compact style */
+        .dataTables_wrapper table.dataTable.compact thead th {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .table-page-container {
+                padding: 1rem 0;
+            }
+
+            .dataTables-container {
+                padding: 1rem;
+            }
+        }
+
+        .btn-new-post {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-new-post:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        /* Form styles */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: var(--border-radius);
+            font-family: inherit;
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        tbody {
+            text-align: center;
+        }
+
+        /* Drag and drop area */
+        .dropzone {
+            border: 2px dashed #ced4da;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .dropzone:hover, .dropzone.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.05);
+        }
+
+        .dropzone-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .dropzone-text {
+            margin-bottom: 0.5rem;
+        }
+
+        .dropzone-hint {
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+
+        .file-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .file-preview-item {
+            background: #f8f9fa;
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .file-preview-remove {
+            color: #dc3545;
+            cursor: pointer;
+        }
+
+        /* Modal footer */
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .btn-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-cancel {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .btn-cancel:hover {
+            background-color: #5a6268;
+        }
+    </style>
+
+    <title>{{title}}</title>
+</head>
+<body>
