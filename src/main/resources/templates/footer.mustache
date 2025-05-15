@@ -10,8 +10,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         $('#dataTable').DataTable({
+            serverSide: true,
             dom: '<"top"lf>rt<"bottom"ip>',
             pageLength: 10,
             order: [[3, "desc"]],
@@ -28,7 +29,32 @@
                     last: '<i class="fas fa-angle-double-right"></i>'
                 }
             },
-            initComplete: function() {
+            ajax: {
+                url: '/api/mapping_table', // Replace with your actual API endpoint
+                type: 'POST',
+                contentType: 'application/json',
+                data: function (d) {
+                    return JSON.stringify(d); // send as raw JSON in body
+                }
+            },
+            columns: [
+                {data: 'appVersion'},
+                {data: 'filename'},
+                {data: 'dateUploaded'},
+                {data: 'comments'},
+                {
+                    data: null, // For custom buttons
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        return `
+                        <button class="btn-view" onclick="view(${row.appVersion})"><i class="fas fa-eye"></i> </button>
+                        <button class="btn-edit" onclick="edit('${row.appVersion}', '${row.filename}', '${row.comments}', '${row.dateUploaded}')"><i class="fas fa-edit"></i></button>
+                    `;
+                    }
+                }
+            ],
+            initComplete: function () {
                 $('.dataTables_filter input').addClass('form-control');
                 $('.dataTables_length select').addClass('form-control');
             }
@@ -44,8 +70,12 @@
             'font-size': '1rem',
             'transition': 'color 0.2s'
         }).hover(
-                function() { $(this).css('color', '#3a0ca3'); },
-                function() { $(this).css('color', '#4361ee'); }
+                function () {
+                    $(this).css('color', '#3a0ca3');
+                },
+                function () {
+                    $(this).css('color', '#4361ee');
+                }
         );
     });
 
@@ -54,12 +84,14 @@
     const modal = document.getElementById('newPostModal');
     const closeBtn = document.querySelector('.modal-close');
     const cancelBtn = document.querySelector('.btn-cancel');
-    const submitBtn = document.getElementById('submitPost');
+    const submitBtn = document.getElementById('submit');
     const dropzone = document.getElementById('dropzone');
     const fileInput = document.getElementById('fileInput');
     const filePreview = document.getElementById('filePreview');
 
     let selectedFile = null;
+    let filename = "";
+    let dateUploaded = "";
 
     // Open modal
     newPostBtn.addEventListener('click', () => {
@@ -120,7 +152,7 @@
     function handleDrop(e) {
         const dt = e.dataTransfer;
         const files = dt.files;
-        handleFiles({ target: { files } });
+        handleFiles({target: {files}});
     }
 
     function handleFiles(e) {
@@ -159,41 +191,63 @@
 
     // Form submission
     submitBtn.addEventListener('click', async () => {
-        const title = document.getElementById('postTitle').value;
-        const author = document.getElementById('postAuthor').value;
-        const content = document.getElementById('postContent').value;
+        const version = document.getElementById('appVersion').value;
+        const comment = document.getElementById('comment').value;
 
-        if (!title || !author || !content) {
+        if (!version || !comment) {
             alert('Please fill in all required fields');
             return;
         }
+        await save(version, comment);
+    });
 
+    async function save(version, comment) {
         const formData = new FormData();
-        formData.append('title', title);
-        formData.append('author', author);
-        formData.append('content', content);
+        formData.append('version', version);
+        formData.append('comment', comment);
+        formData.append('filename', filename);
+        formData.append('dateUploaded', dateUploaded);
+
         if (selectedFile) {
             formData.append('file', selectedFile);
         }
 
         try {
-            const response = await fetch('/api/posts', {
+            const response = await fetch('/api/save', {
                 method: 'POST',
                 body: formData
             });
 
             if (response.ok) {
-                alert('Post created successfully!');
+                alert(filename === "" ? 'Entry created successfully!' : "Entry updated successfully");
                 closeModal();
+                filename = "";
+                dateUploaded = "";
+                selectedFile = null;
                 // Refresh the DataTable
                 $('#dataTable').DataTable().ajax.reload();
             } else {
-                throw new Error('Failed to create post');
+                alert(response.error)
             }
         } catch (error) {
             console.error('Error:', error);
-            alert('Error creating post');
+            alert('Error creating entry');
         }
-    });
+    }
+
+    function view(filename) {
+
+    }
+
+    function edit(appVersion, p_filename, comments, p_dateUploaded) {
+        $('#appVersion').val(appVersion);
+        $('#comments').val(comments);
+
+        filename = p_filename;
+        dateUploaded = p_dateUploaded;
+
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
 </script>
 </html>
