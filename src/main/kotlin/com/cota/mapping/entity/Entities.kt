@@ -5,5 +5,9 @@ data class MappingEntry(
         var filename: String,
         var dateUploaded: String,
         var comments: String,
+        var full_path: String? = null
+)
+data class AppVersionRequest(
+        val appVersion: String? =null
 )
 

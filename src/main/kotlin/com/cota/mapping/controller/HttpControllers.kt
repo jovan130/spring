@@ -43,4 +43,6 @@ class ArticleController() {
     fun getPosts(@RequestBody request: DataTableRequest): DataTableResponse<MappingEntry> {
         return mappingService.getPaginatedMappings(request)
     }
+
+
 }
