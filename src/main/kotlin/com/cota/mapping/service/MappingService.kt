@@ -18,9 +18,13 @@ class MappingService(
 ) {
     @Value("\${mapping.resource.base_url}")
     val mapping_resource_base_url = "https://storage.cloud.google.com/prodtest-us-5g-udp2-4-dxh-test-multiregion"
+
+    @Value("\${mapping.api.base_url}")
+    val mapping_base_url = "https://external-api.com/mapping"
+
     fun fetchMappings(): List<MappingEntry> {
         val response = restTemplate.exchange(
-                Endpoints.Mapping.GetAll,
+                "${mapping_base_url}${Endpoints.Mapping.GetAll}",
                 HttpMethod.GET,
                 null,
                 object : ParameterizedTypeReference<List<MappingEntry>>() {}
@@ -61,7 +65,7 @@ class MappingService(
 
     fun getByVersion(version: String): MappingEntry? {
         val response = restTemplate.exchange(
-                Endpoints.Mapping.GetByVersion,
+                "${mapping_base_url}${Endpoints.Mapping.GetByVersion}",
                 HttpMethod.GET,
                 HttpEntity(AppVersionRequest(version)),
                 object : ParameterizedTypeReference<MappingEntry>() {}
@@ -73,7 +77,7 @@ class MappingService(
         //Todo upload file to GCS and save the path to info
 
         val response = restTemplate.exchange(
-                Endpoints.Mapping.Add,
+                "${mapping_base_url}${Endpoints.Mapping.Add}",
                 HttpMethod.POST,
                 HttpEntity(info),
                 object : ParameterizedTypeReference<String>() {}
@@ -83,7 +87,7 @@ class MappingService(
 
     fun deleteMapping(version: String): String? {
         val response = restTemplate.exchange(
-                Endpoints.Mapping.Delete,
+                "${mapping_base_url}${Endpoints.Mapping.Delete}",
                 HttpMethod.POST,
                 HttpEntity(AppVersionRequest(version)),
                 object : ParameterizedTypeReference<String>() {}
