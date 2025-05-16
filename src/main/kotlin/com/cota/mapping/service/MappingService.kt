@@ -12,9 +12,8 @@ import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.multipart.MultipartFile
-import org.springframework.web.servlet.support.RequestContextUtils
 import java.time.OffsetDateTime
-import java.util.UUID
+import java.util.*
 
 @Service
 class MappingService(
@@ -116,35 +115,8 @@ class MappingService(
 
     fun fetchDummyMappings(): List<MappingEntry> {
         val list = listOf(
-                MappingEntry(appVersion = "1.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.3.0", filename = "sfsef.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.4.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.5.0", filename = "drg.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.6.0", filename = "yjgyjy.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.3.0", filename = "rdg.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "4.1.0", filename = "binsfefsary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "3.8.0", filename = "eretrt.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.6.0", filename = "yjgyjy.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.3.0", filename = "rdg.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "4.1.0", filename = "binsfefsary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "3.8.0", filename = "eretrt.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.6.0", filename = "yjgyjy.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.3.0", filename = "rdg.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "4.1.0", filename = "binsfefsary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "3.8.0", filename = "eretrt.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.6.0", filename = "yjgyjy.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.3.0", filename = "rdg.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "4.1.0", filename = "binsfefsary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "3.8.0", filename = "eretrt.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "1.6.0", filename = "yjgyjy.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.3.0", filename = "rdg.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "4.1.0", filename = "binsfefsary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "2.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = ""),
-                MappingEntry(appVersion = "3.8.0", filename = "eretrt.bin", dateUploaded = "2025.05.06", comments = ""),
+                MappingEntry(appVersion = "1.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = "sefsefse"),
+                MappingEntry(appVersion = "1.3.0", filename = "sfsef.bin", dateUploaded = "2025.05.06", comments = "sefsefsef"),
         );
         return list
     }
