@@ -7,10 +7,14 @@ import com.cota.mapping.entity.MappingEntry
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.support.RequestContextUtils
+import java.time.OffsetDateTime
+import java.util.UUID
 
 @Service
 class MappingService(
@@ -24,9 +28,9 @@ class MappingService(
 
     fun fetchMappings(): List<MappingEntry> {
         val response = restTemplate.exchange(
-                "${mapping_base_url}${Endpoints.Mapping.GetAll}",
+                "${mapping_base_url}${Constants.Mapping.GetAll}",
                 HttpMethod.GET,
-                null,
+                HttpEntity(null, getHttpHeaders()),
                 object : ParameterizedTypeReference<List<MappingEntry>>() {}
         )
         val list: List<MappingEntry> = response.body ?: emptyList()
@@ -65,9 +69,9 @@ class MappingService(
 
     fun getByVersion(version: String): MappingEntry? {
         val response = restTemplate.exchange(
-                "${mapping_base_url}${Endpoints.Mapping.GetByVersion}",
+                "${mapping_base_url}${Constants.Mapping.GetByVersion}",
                 HttpMethod.GET,
-                HttpEntity(AppVersionRequest(version)),
+                HttpEntity(AppVersionRequest(version), getHttpHeaders()),
                 object : ParameterizedTypeReference<MappingEntry>() {}
         )
         return response.body
@@ -77,9 +81,9 @@ class MappingService(
         //Todo upload file to GCS and save the path to info
 
         val response = restTemplate.exchange(
-                "${mapping_base_url}${Endpoints.Mapping.Add}",
+                "${mapping_base_url}${Constants.Mapping.Add}",
                 HttpMethod.POST,
-                HttpEntity(info),
+                HttpEntity(info, getHttpHeaders()),
                 object : ParameterizedTypeReference<String>() {}
         )
         return response.body
@@ -87,12 +91,27 @@ class MappingService(
 
     fun deleteMapping(version: String): String? {
         val response = restTemplate.exchange(
-                "${mapping_base_url}${Endpoints.Mapping.Delete}",
+                "${mapping_base_url}${Constants.Mapping.Delete}",
                 HttpMethod.POST,
-                HttpEntity(AppVersionRequest(version)),
+                HttpEntity(AppVersionRequest(version), getHttpHeaders()),
                 object : ParameterizedTypeReference<String>() {}
         )
         return response.body
+    }
+
+    fun getHttpHeaders(): HttpHeaders {
+        val traceId = UUID.randomUUID().toString()
+        val accountId = UUID.randomUUID().toString()
+        val softwareId = UUID.randomUUID().toString()
+        val requestTimestamp = OffsetDateTime.now().toString()
+
+        val headers = HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "application/json")
+        headers.add(Constants.HeaderKeys.TRACE_ID, traceId)
+        headers.add(Constants.HeaderKeys.ACCOUNT_ID, accountId)
+        headers.add(Constants.HeaderKeys.SOFTWARE_ID, softwareId)
+
+        return headers
     }
 
     fun fetchDummyMappings(): List<MappingEntry> {
