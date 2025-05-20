@@ -95,6 +95,7 @@
 
     // Open modal
     newPostBtn.addEventListener('click', () => {
+        $('#submit').html('Create')
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     });
@@ -263,6 +264,8 @@
     function edit(appVersion, p_filename, comments, p_dateUploaded) {
         $('#appVersion').val(appVersion);
         $('#comment').text(comments);
+
+        $('#submit').html('Update')
 
         filename = p_filename;
         dateUploaded = p_dateUploaded;
