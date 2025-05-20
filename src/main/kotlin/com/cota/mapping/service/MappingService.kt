@@ -37,7 +37,7 @@ class MappingService(
     }
 
     fun getPaginatedMappings(request: DataTableRequest): DataTableResponse<MappingEntry> {
-        val allPosts = fetchDummyMappings()
+        val allPosts = fetchMappings().data
 
         if (allPosts == null) {
             return DataTableResponse(
