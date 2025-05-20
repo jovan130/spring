@@ -12,3 +12,13 @@ data class AppVersionRequest(
         val appVersion: String? = null
 )
 
+data class FirmwareEntry(
+        val firmwareBinary: ByteArray? = null,
+        val filePath: String? = null
+)
+
+data class ApiResult<T>(
+        val data: T? = null,
+        val error: String? = null
+)
+

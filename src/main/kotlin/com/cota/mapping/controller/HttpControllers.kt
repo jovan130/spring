@@ -22,17 +22,32 @@ class ArticleController() {
     @PostMapping("/save")
     fun save(
             @RequestParam version: String,
-            @RequestParam comment: String,
-            @RequestParam filename: String,
-            @RequestParam dateUploaded: String,
+            @RequestParam(required = false) comment: String,
+            @RequestParam(required = false) filename: String,
+            @RequestParam(required = false) dateUploaded: String,
             @RequestParam(required = false) file: MultipartFile?
     ): ResponseEntity<Map<String, String>> {
         return try {
-            val currentDate = LocalDate.now().toString().replace("-", ".")
+            var currentDate = LocalDate.now().toString().replace("-", ".")
+            if (dateUploaded.isNotBlank()) {
+                currentDate = dateUploaded
+            }
 
-            // Todo save the mapping using external api.
+            val info = MappingEntry(
+                    appVersion = version,
+                    comments = comment,
+                    dateUploaded = currentDate,
+                    filename = filename
+            )
 
-            ResponseEntity.ok(mapOf("message" to "Post created successfully"))
+            val result = mappingService.addMapping(info, file)
+            if (result.error == null) {
+                ResponseEntity.ok(mapOf("message" to "Post created successfully"))
+            } else {
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(mapOf("error" to "${result.error}"))
+            }
+
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(mapOf("error" to "Failed to create mapping entry"))

@@ -7,6 +7,7 @@ object Constants {
         const val Add = "/add"
         const val Delete = "/delete"
         const val Update = "/replace"
+        const val Upload = "/uploadFirmware"
     }
 
     object HeaderKeys {

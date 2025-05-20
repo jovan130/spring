@@ -4,5 +4,5 @@ data class DataTableResponse<T>(
         val draw: Int,
         val recordsTotal: Long,
         val recordsFiltered: Long,
-        val data: List<T>
+        val data: List<T>? = null
 )
