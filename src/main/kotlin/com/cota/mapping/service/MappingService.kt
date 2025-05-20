@@ -114,13 +114,18 @@ class MappingService(
                 filePath = filePath
         )
         return try {
-            val response = restTemplate.exchange(
-                    "${mapping_base_url}${Constants.Mapping.Upload}",
-                    HttpMethod.POST,
-                    HttpEntity(info, getHttpHeaders()),
-                    object : ParameterizedTypeReference<String>() {}
-            )
-            ApiResult(data = response.body)
+            if (firmwareBinary != null) {
+                val response = restTemplate.exchange(
+                        "${mapping_base_url}${Constants.Mapping.Upload}",
+                        HttpMethod.POST,
+                        HttpEntity(info, getHttpHeaders()),
+                        object : ParameterizedTypeReference<String>() {}
+                )
+                ApiResult(data = response.body)
+            } else {
+                ApiResult(data = "not update firmware")
+            }
+
         } catch (e: Exception) {
             ApiResult(error = e.message)
         }
