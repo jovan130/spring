@@ -2,12 +2,12 @@ package com.cota.mapping.service
 
 object Constants {
     object Mapping {
-        const val GetAll = "/getMappings"
-        const val GetByVersion = "/byVersion"
-        const val Add = "/add"
-        const val Delete = "/delete"
-        const val Update = "/replace"
-        const val Upload = "/uploadFirmware"
+        const val GetAll = "mapping/getMappings"
+        const val GetByVersion = "mapping/byVersion"
+        const val Add = "mapping/add"
+        const val Delete = "mapping/delete"
+        const val Update = "mapping/replace"
+        const val Upload = "firmware/uploadFirmware"
     }
 
     object HeaderKeys {
