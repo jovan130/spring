@@ -30,14 +30,14 @@ class MappingService(
                     object : ParameterizedTypeReference<List<MappingEntry>>() {}
             )
             val list: List<MappingEntry> = response.body ?: emptyList()
-            ApiResult(data = list.map { item -> item.copy(full_path = "$mapping_resource_base_url/${item.filename}") })
+            ApiResult(data = list.map { item -> item.copy(filename = "$mapping_resource_base_url/${item.filename}#${item.filename}") })
         } catch (e: Exception) {
             ApiResult(null, error = e.message)
         }
     }
 
     fun getPaginatedMappings(request: DataTableRequest): DataTableResponse<MappingEntry> {
-        val allPosts = fetchMappings().data
+        val allPosts = fetchDummyMappings()
 
         if (allPosts == null) {
             return DataTableResponse(
@@ -159,6 +159,6 @@ class MappingService(
                 MappingEntry(appVersion = "1.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = "sefsefse"),
                 MappingEntry(appVersion = "1.3.0", filename = "sfsef.bin", dateUploaded = "2025.05.06", comments = "sefsefsef"),
         );
-        return list
+        return list.map { item -> item.copy(filename = "$mapping_resource_base_url/${item.filename}#${item.filename}") }
     }
 }

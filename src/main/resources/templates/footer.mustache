@@ -39,7 +39,12 @@
             },
             columns: [
                 {data: 'appVersion'},
-                {data: 'filename'},
+                {
+                    data: null,
+                    render: function (data, type, row) {
+                        return row.filename.split("#")[1];
+                    }
+                },
                 {data: 'dateUploaded'},
                 {data: 'comments'},
                 {
@@ -48,8 +53,8 @@
                     searchable: false,
                     render: function (data, type, row) {
                         return `
-                        <button class="btn-view" onclick="view('${row.full_path}')"><i class="fas fa-eye"></i> </button>
-                        <button class="btn-edit" onclick="edit('${row.appVersion}', '${row.filename}', '${row.comments}', '${row.dateUploaded}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn-view" onclick="view('${row.filename.split("#")[0]}')"><i class="fas fa-eye"></i> </button>
+                        <button class="btn-edit" onclick="edit('${row.appVersion}', '${row.filename.split("#")[1]}', '${row.comments}', '${row.dateUploaded}')"><i class="fas fa-edit"></i></button>
                     `;
                     }
                 }
