@@ -54,6 +54,25 @@ class ArticleController() {
         }
     }
 
+    @PostMapping("/delete")
+    fun delete(
+            @RequestParam version: String,
+    ): ResponseEntity<Map<String, String>> {
+        return try {
+            val result = mappingService.deleteMapping(version)
+            if (result.error == null) {
+                ResponseEntity.ok(mapOf("message" to "Mapping entry has been removed successfully"))
+            } else {
+                ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(mapOf("error" to "${result.error}"))
+            }
+
+        } catch (e: Exception) {
+            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(mapOf("error" to "Failed to remove mapping entry"))
+        }
+    }
+
     @PostMapping("/mapping_table", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun getPosts(@RequestBody request: DataTableRequest): DataTableResponse<MappingEntry> {
         return mappingService.getPaginatedMappings(request)

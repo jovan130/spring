@@ -30,7 +30,7 @@ class MappingService(
                     object : ParameterizedTypeReference<List<MappingEntry>>() {}
             )
             val list: List<MappingEntry> = response.body ?: emptyList()
-            ApiResult(data = list.map { item -> item.copy(filename = "$mapping_resource_base_url/${item.filename}#${item.filename}") })
+            ApiResult(data = list.map { item -> item.copy(filename = item.filename) })
         } catch (e: Exception) {
             ApiResult(null, error = e.message)
         }
@@ -93,6 +93,7 @@ class MappingService(
         return try {
             val uploadResult = uploadFirmware(file, info.filename)
             if (uploadResult.error == null) {
+                info.filename = uploadResult.data.toString()
                 val response = restTemplate.exchange(
                         "${mapping_base_url}${Constants.Mapping.Add}",
                         HttpMethod.POST,
@@ -123,7 +124,7 @@ class MappingService(
                 )
                 ApiResult(data = response.body)
             } else {
-                ApiResult(data = "not update firmware")
+                ApiResult(data = filePath)
             }
 
         } catch (e: Exception) {
@@ -164,6 +165,6 @@ class MappingService(
                 MappingEntry(appVersion = "1.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = "sefsefse"),
                 MappingEntry(appVersion = "1.3.0", filename = "sfsef.bin", dateUploaded = "2025.05.06", comments = "sefsefsef"),
         );
-        return list.map { item -> item.copy(filename = "$mapping_resource_base_url/${item.filename}#${item.filename}") }
+        return list.map { item -> item.copy(filename = item.filename) }
     }
 }
