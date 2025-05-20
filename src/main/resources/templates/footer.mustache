@@ -239,11 +239,11 @@
     async function remove(version) {
         if (confirm("Are you sure you want to delete this entry?")) {
             try {
+                const formData = new FormData();
+                formData.append('version', version);
                 const response = await fetch('/api/delete', {
                     method: 'POST',
-                    body: {
-                        version: version
-                    }
+                    body: formData
                 });
 
                 if (response.ok) {
