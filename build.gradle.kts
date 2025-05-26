@@ -8,6 +8,7 @@ plugins {
 	kotlin("plugin.allopen") version "1.9.22"
 	kotlin("plugin.jpa") version "1.9.22"
 	kotlin("kapt") version "1.9.22"
+	jacoco
 }
 
 group = "com.example"
@@ -27,12 +28,12 @@ dependencies {
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.springframework.boot:spring-boot-devtools")
 	kapt("org.springframework.boot:spring-boot-configuration-processor")
-	testImplementation("org.springframework.boot:spring-boot-starter-test") {
-		exclude(module = "mockito-core")
-	}
-	testImplementation("org.junit.jupiter:junit-jupiter-api")
-	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-	testImplementation("com.ninja-squad:springmockk:4.0.2")
+
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+	testImplementation("org.mockito:mockito-core:4.5.1")
+	testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
 tasks.withType<KotlinCompile> {
@@ -50,4 +51,69 @@ allOpen {
 
 tasks.withType<Test> {
 	useJUnitPlatform()
+}
+// Configure JaCoCo
+jacoco {
+	toolVersion = "0.8.8" // Use the latest version
+	reportsDirectory.set(layout.buildDirectory.dir("reports/jacoco"))
+}
+
+tasks.jacocoTestReport {
+	dependsOn(tasks.test) // tests are required to run before generating the report
+
+	reports {
+		xml.required.set(true)
+		csv.required.set(false)
+		html.required.set(true)
+		html.outputLocation.set(layout.buildDirectory.dir("reports/jacoco/html"))
+	}
+
+	// Define what classes should be included/excluded from coverage
+	classDirectories.setFrom(
+			files(classDirectories.files.map {
+				fileTree(it) {
+					exclude(
+							"**/config/**",
+							"**/entity/**",
+							"**/dto/**",
+							"**/exception/**",
+							"**/Application*"
+					)
+				}
+			})
+	)
+}
+
+tasks.jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				minimum = "0.80".toBigDecimal() // Minimum 80% coverage
+			}
+		}
+
+		rule {
+			enabled = true
+			element = "CLASS"
+			includes = listOf("com.cota.mapping.controller.*", "com.cota.mapping.service.*")
+
+			limit {
+				counter = "LINE"
+				value = "COVEREDRATIO"
+				minimum = "0.80".toBigDecimal()
+			}
+
+			limit {
+				counter = "BRANCH"
+				value = "COVEREDRATIO"
+				minimum = "0.60".toBigDecimal()
+			}
+		}
+	}
+}
+
+// Ensure coverage verification happens during build
+tasks.check {
+	dependsOn(tasks.jacocoTestCoverageVerification)
+	dependsOn(tasks.jacocoTestReport)
 }

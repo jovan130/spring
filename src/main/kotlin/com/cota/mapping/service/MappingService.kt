@@ -163,7 +163,7 @@ class MappingService(
     fun fetchDummyMappings(): List<MappingEntry> {
         val list = listOf(
                 MappingEntry(appVersion = "1.1.0", filename = "binary.bin", dateUploaded = "2025.05.06", comments = "sefsefse"),
-                MappingEntry(appVersion = "1.3.0", filename = "sfsef.bin", dateUploaded = "2025.05.06", comments = "sefsefsef"),
+                MappingEntry(appVersion = "1.3.0", filename = "gs://prodtest-us-5g-udp2-4-dxh-test-multiregion/cota_dataResource/patches/cota_dataResource_patches_testFirmware.bin", dateUploaded = "2025.05.06", comments = "sefsefsef"),
         );
         return list.map { item -> item.copy(filename = item.filename) }
     }
